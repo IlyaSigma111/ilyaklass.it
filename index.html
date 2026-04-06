@@ -6,120 +6,148 @@
     <title>ИльЯкласс - Игрок</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
         }
+
         .container {
             max-width: 500px;
             width: 90%;
             padding: 20px;
         }
+
         .logo {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 32px;
         }
+
         .logo h1 {
-            font-size: 42px;
+            font-size: 40px;
             color: white;
-            text-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.2);
         }
+
         .logo p {
             color: rgba(255,255,255,0.8);
         }
+
         .card {
             background: white;
-            border-radius: 30px;
-            padding: 30px;
+            border-radius: 32px;
+            padding: 32px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.2);
         }
-        .pin-input {
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #334155;
+        }
+
+        .form-group input {
             width: 100%;
-            padding: 20px;
-            font-size: 32px;
+            padding: 16px;
+            font-size: 18px;
             text-align: center;
-            letter-spacing: 10px;
+            letter-spacing: 4px;
             border: 2px solid #e2e8f0;
             border-radius: 20px;
-            margin-bottom: 20px;
-            font-weight: bold;
             font-family: monospace;
+            font-weight: bold;
         }
-        .name-input {
-            width: 100%;
-            padding: 15px;
-            font-size: 16px;
-            border: 2px solid #e2e8f0;
-            border-radius: 20px;
-            margin-bottom: 20px;
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #6366f1;
         }
+
         .btn {
             width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 16px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
             color: white;
             border: none;
-            border-radius: 30px;
+            border-radius: 40px;
             font-size: 18px;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
+            transition: transform 0.2s;
         }
-        .waiting-screen {
-            text-align: center;
-            padding: 40px;
+
+        .btn:active {
+            transform: scale(0.98);
         }
-        .waiting-spinner {
-            font-size: 64px;
-            animation: spin 1s linear infinite;
+
+        /* Игровой экран */
+        .score-badge {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-weight: bold;
+            color: #ffd700;
         }
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
+
         .question-card {
             background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 30px;
-            padding: 30px;
+            border-radius: 32px;
+            padding: 32px;
             color: white;
         }
+
         .question-text {
             font-size: 24px;
+            font-weight: 700;
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 32px;
+            line-height: 1.3;
         }
+
         .answers-grid {
             display: grid;
-            grid-template-columns: 1fr;
             gap: 12px;
         }
+
         .answer-btn {
             border: none;
             border-radius: 20px;
-            padding: 18px;
-            font-size: 18px;
+            padding: 18px 20px;
+            font-size: 16px;
+            font-weight: 600;
             color: white;
-            font-weight: bold;
             cursor: pointer;
             transition: transform 0.1s;
             text-align: left;
-            padding-left: 25px;
         }
+
         .answer-btn:active {
             transform: scale(0.97);
         }
-        .answer-btn.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        .answer-btn:nth-child(1) { background: #e74c3c; }
-        .answer-btn:nth-child(2) { background: #3498db; }
-        .answer-btn:nth-child(3) { background: #f39c12; }
-        .answer-btn:nth-child(4) { background: #2ecc71; }
+
+        .answer-red { background: #e74c3c; }
+        .answer-blue { background: #3498db; }
+        .answer-yellow { background: #f39c12; }
+        .answer-green { background: #2ecc71; }
+
         .timer {
             text-align: center;
             font-size: 48px;
@@ -127,110 +155,105 @@
             color: #ffd700;
             margin: 20px 0;
         }
-        .score-badge {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            background: rgba(0,0,0,0.6);
-            padding: 8px 16px;
-            border-radius: 30px;
-            font-size: 16px;
-            font-weight: bold;
-            color: #ffd700;
-        }
-        .correct-feedback {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 80px;
-            animation: pop 0.5s ease-out;
-            pointer-events: none;
-        }
-        @keyframes pop {
-            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
-            50% { transform: translate(-50%, -50%) scale(1.5); opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
-        }
-        .result-screen {
+
+        .waiting-screen {
             text-align: center;
             padding: 40px;
         }
+
+        .spinner {
+            font-size: 48px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
         .final-score {
-            font-size: 72px;
+            font-size: 64px;
             color: #ffd700;
             margin: 20px 0;
+        }
+
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div class="container" id="app">
-        <div class="logo">
-            <h1>🎮 ИльЯкласс</h1>
-            <p>Введи код и играй!</p>
-        </div>
-        <div id="content"></div>
-    </div>
+    <div class="container" id="app"></div>
 
     <script>
-        const SB_URL = 'https://sekiunglzxycjkgraudd.supabase.co';
-        const SB_KEY = 'sb_publishable_k5F_fZwKqsbwpO-itXvT9Q_UhRc6svh';
-        const supabase = window.supabase.createClient(SB_URL, SB_KEY);
-        
+        const SUPABASE_URL = 'https://sekiunglzxycjkgraudd.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_k5F_fZwKqsbwpO-itXvT9Q_UhRc6svh';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
         let playerInfo = null;
         let currentGame = null;
         let currentQuestion = null;
         let hasAnswered = false;
         let questionStartTime = null;
-        let gameActive = true;
         let currentScore = 0;
-        
+        let gameActive = true;
+
         showJoinScreen();
-        
+
         function showJoinScreen() {
-            document.getElementById('content').innerHTML = `
+            document.getElementById('app').innerHTML = `
+                <div class="logo">
+                    <h1>🎮 ИльЯкласс</h1>
+                    <p>Введи код и играй!</p>
+                </div>
                 <div class="card">
-                    <input type="text" id="pinInput" class="pin-input" placeholder="PIN-код" maxlength="4">
-                    <input type="text" id="nameInput" class="name-input" placeholder="Твоё имя">
+                    <div class="form-group">
+                        <label>PIN-код игры</label>
+                        <input type="text" id="pinInput" maxlength="4" placeholder="0000">
+                    </div>
+                    <div class="form-group">
+                        <label>Твоё имя</label>
+                        <input type="text" id="nameInput" placeholder="Как тебя зовут?">
+                    </div>
                     <button class="btn" onclick="joinGame()">🔌 Войти в игру</button>
                 </div>
             `;
         }
-        
+
         async function joinGame() {
             const pin = document.getElementById('pinInput').value.trim();
             const playerName = document.getElementById('nameInput').value.trim();
-            
+
             if (!pin || pin.length !== 4) {
-                alert('Введи 4-значный PIN-код');
+                alert('Введите 4-значный PIN-код');
                 return;
             }
             if (!playerName) {
-                alert('Введи своё имя');
+                alert('Введите ваше имя');
                 return;
             }
-            
-            // Ищем игру по PIN
+
+            // Поиск игры по PIN
             const { data: game, error } = await supabase
                 .from('game_sessions')
                 .select('*')
                 .eq('pin', pin)
                 .single();
-            
+
             if (error || !game) {
                 alert('Игра с таким PIN не найдена');
                 return;
             }
-            
+
             if (game.status !== 'waiting') {
-                alert('Игра уже началась');
+                alert('Игра уже началась или завершена');
                 return;
             }
-            
+
             currentGame = game;
-            
-            // Добавляем игрока
-            const playerId = 'player_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+
+            // Регистрация игрока
+            const playerId = 'player_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8);
             const { error: joinError } = await supabase
                 .from('game_players')
                 .insert({
@@ -239,30 +262,20 @@
                     player_name: playerName,
                     score: 0
                 });
-            
+
             if (joinError) {
                 alert('Ошибка подключения: ' + joinError.message);
                 return;
             }
-            
+
             playerInfo = { id: playerId, name: playerName, gameId: game.id };
-            startGameListener();
+            startListening();
         }
-        
-        async function startGameListener() {
-            document.getElementById('content').innerHTML = `
-                <div class="card">
-                    <div class="waiting-screen">
-                        <div class="waiting-spinner">🎮</div>
-                        <h2 style="margin-top:20px;">Ожидание начала...</h2>
-                        <p style="margin-top:10px;">Код: <strong>${currentGame.pin}</strong></p>
-                        <p>Имя: <strong>${playerInfo.name}</strong></p>
-                    </div>
-                </div>
-                <div class="score-badge" id="scoreBadge">⭐ 0</div>
-            `;
-            
-            // Подписываемся на изменения игры
+
+        async function startListening() {
+            renderWaiting();
+
+            // Подписка на изменения игры
             supabase
                 .channel('game')
                 .on('postgres_changes', {
@@ -272,8 +285,8 @@
                     filter: `id=eq.${currentGame.id}`
                 }, (payload) => onGameUpdate(payload.new))
                 .subscribe();
-            
-            // Подписываемся на изменения счёта
+
+            // Подписка на изменение счёта
             supabase
                 .channel('score')
                 .on('postgres_changes', {
@@ -284,20 +297,34 @@
                 }, (payload) => updateScore(payload.new.score))
                 .subscribe();
         }
-        
+
+        function renderWaiting() {
+            document.getElementById('app').innerHTML = `
+                <div class="card">
+                    <div class="waiting-screen">
+                        <div class="spinner">🎮</div>
+                        <h2 style="margin-top: 20px;">Ожидание начала...</h2>
+                        <p style="margin-top: 12px;">Код: <strong>${currentGame.pin}</strong></p>
+                        <p>Имя: <strong>${escapeHtml(playerInfo.name)}</strong></p>
+                    </div>
+                </div>
+                <div class="score-badge" id="scoreBadge">⭐ 0</div>
+            `;
+        }
+
         async function onGameUpdate(game) {
             if (!gameActive) return;
-            
+
             if (game.status === 'ended') {
                 showGameEnd();
                 return;
             }
-            
+
             if (game.status === 'active') {
                 await loadCurrentQuestion(game.current_question_index);
             }
         }
-        
+
         async function loadCurrentQuestion(questionIndex) {
             const { data: question } = await supabase
                 .from('game_questions')
@@ -305,36 +332,38 @@
                 .eq('game_id', currentGame.id)
                 .eq('question_index', questionIndex)
                 .single();
-            
+
             if (!question) return;
-            
-            // Проверяем, отвечал ли уже игрок
-            const { data: existingAnswer } = await supabase
+
+            // Проверяем, не отвечал ли уже игрок
+            const { data: existing } = await supabase
                 .from('game_answers')
                 .select('*')
                 .eq('question_id', question.id)
                 .eq('player_id', playerInfo.id)
                 .maybeSingle();
-            
-            if (existingAnswer) {
-                showWaitForNext();
+
+            if (existing) {
+                renderWaiting();
                 return;
             }
-            
+
             currentQuestion = question;
             hasAnswered = false;
             questionStartTime = Date.now();
-            showQuestion(question);
+            renderQuestion(question);
         }
-        
-        function showQuestion(question) {
-            document.getElementById('content').innerHTML = `
+
+        function renderQuestion(question) {
+            const colors = ['answer-red', 'answer-blue', 'answer-yellow', 'answer-green'];
+            
+            document.getElementById('app').innerHTML = `
                 <div class="question-card">
                     <div class="question-text">${escapeHtml(question.question_text)}</div>
                     <div class="timer" id="timer">${question.time_limit}</div>
                     <div class="answers-grid">
                         ${question.answers.map((ans, i) => `
-                            <button class="answer-btn" onclick="submitAnswer(${i})">
+                            <button class="answer-btn ${colors[i]}" onclick="submitAnswer(${i})">
                                 ${String.fromCharCode(65+i)}. ${escapeHtml(ans)}
                             </button>
                         `).join('')}
@@ -342,87 +371,67 @@
                 </div>
                 <div class="score-badge" id="scoreBadge">⭐ ${currentScore}</div>
             `;
-            
+
             let timeLeft = question.time_limit;
             const timerEl = document.getElementById('timer');
             
-            const interval = setInterval(() => {
+            if (window.timerInterval) clearInterval(window.timerInterval);
+            
+            window.timerInterval = setInterval(() => {
                 timeLeft--;
                 if (timerEl) timerEl.textContent = timeLeft;
                 if (timeLeft <= 0) {
-                    clearInterval(interval);
-                    if (!hasAnswered) showTimeOut();
+                    clearInterval(window.timerInterval);
+                    if (!hasAnswered) showTimeout();
                 }
             }, 1000);
-            
-            window.currentTimer = interval;
         }
-        
+
         async function submitAnswer(answerIndex) {
             if (hasAnswered) return;
             if (!currentQuestion) return;
-            
-            clearInterval(window.currentTimer);
+
+            clearInterval(window.timerInterval);
             hasAnswered = true;
-            
+
             const responseTime = Date.now() - questionStartTime;
-            
-            const answerId = 'ans_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
-            
-            await supabase.from('game_answers').insert({
-                id: answerId,
-                game_id: currentGame.id,
-                question_id: currentQuestion.id,
-                player_id: playerInfo.id,
-                answer_index: answerIndex,
-                response_time_ms: responseTime
-            });
-            
-            const isCorrect = (answerIndex === currentQuestion.correct_answer);
-            showFeedback(isCorrect);
-            showWaitForNext();
+
+            const answerId = 'ans_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8);
+
+            await supabase
+                .from('game_answers')
+                .insert({
+                    id: answerId,
+                    game_id: currentGame.id,
+                    question_id: currentQuestion.id,
+                    player_id: playerInfo.id,
+                    answer_index: answerIndex,
+                    response_time_ms: responseTime
+                });
+
+            // Показываем ожидание
+            renderWaiting();
         }
-        
-        function showFeedback(isCorrect) {
-            const feedback = document.createElement('div');
-            feedback.className = 'correct-feedback';
-            feedback.textContent = isCorrect ? '✅' : '❌';
-            document.body.appendChild(feedback);
-            setTimeout(() => feedback.remove(), 500);
-        }
-        
-        function showWaitForNext() {
-            document.getElementById('content').innerHTML = `
+
+        function showTimeout() {
+            document.getElementById('app').innerHTML = `
                 <div class="card">
                     <div class="waiting-screen">
-                        <div class="waiting-spinner">⏳</div>
-                        <h2 style="margin-top:20px;">Ответ принят!</h2>
-                        <p>Ожидание следующего вопроса...</p>
-                    </div>
-                </div>
-                <div class="score-badge" id="scoreBadge">⭐ ${currentScore}</div>
-            `;
-        }
-        
-        function showTimeOut() {
-            document.getElementById('content').innerHTML = `
-                <div class="card">
-                    <div class="waiting-screen">
-                        <div class="waiting-spinner">⏰</div>
-                        <h2 style="margin-top:20px;">Время вышло!</h2>
+                        <div class="spinner">⏰</div>
+                        <h2 style="margin-top: 20px;">Время вышло!</h2>
                         <p>Следующий вопрос скоро начнётся</p>
                     </div>
                 </div>
                 <div class="score-badge" id="scoreBadge">⭐ ${currentScore}</div>
             `;
         }
-        
+
         function updateScore(score) {
             currentScore = score || 0;
             const badge = document.getElementById('scoreBadge');
             if (badge) badge.innerHTML = `⭐ ${currentScore}`;
         }
-        
+
         async function showGameEnd() {
             gameActive = false;
             
@@ -431,24 +440,22 @@
                 .select('score')
                 .eq('id', playerInfo.id)
                 .single();
-            
-            document.getElementById('content').innerHTML = `
-                <div class="card">
-                    <div class="result-screen">
-                        <h1>🏆 Игра окончена! 🏆</h1>
-                        <div class="final-score">${data?.score || 0} ⭐</div>
-                        <p>Твой финальный счёт</p>
-                        <button class="btn" onclick="location.reload()">🎮 Новая игра</button>
-                    </div>
+
+            document.getElementById('app').innerHTML = `
+                <div class="card" style="text-align: center;">
+                    <h1>🏆 Игра окончена! 🏆</h1>
+                    <div class="final-score">${data?.score || 0} ⭐</div>
+                    <p>Твой финальный счёт</p>
+                    <button class="btn" onclick="location.reload()" style="margin-top: 20px;">🎮 Новая игра</button>
                 </div>
             `;
         }
-        
+
         function escapeHtml(str) {
             if (!str) return '';
-            return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m]));
+            return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[m]);
         }
-        
+
         window.joinGame = joinGame;
         window.submitAnswer = submitAnswer;
     </script>
